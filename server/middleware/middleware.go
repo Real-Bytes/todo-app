@@ -55,7 +55,7 @@ func GetAllTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(payload)
 }
 
-// Create taks create task route
+// Create task create task route
 func CreateTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -63,7 +63,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	var task models.ToDoList
 	_ = json.NewDecoder(r.Body).Decode(&task)
-	// fmt.Println(task, r.Body)
+	fmt.Println(task, r.Body)
 	insertOneTask(task)
 	json.NewEncoder(w).Encode(task)
 }
@@ -77,8 +77,24 @@ func TaskComplete(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	params := mux.Vars(r)
+	fmt.Println(params)
 	taskComplete(params["id"])
 	json.NewEncoder(w).Encode(params["id"])
+}
+
+// MoveTask update task route
+func MoveTask(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	var task models.ToDoList
+	_ = json.NewDecoder(r.Body).Decode(&task)
+	fmt.Println(task, r.Body)
+	moveTask(task)
+	json.NewEncoder(w).Encode(task.ID)
 }
 
 // UndoTask undo the complete task route
@@ -161,6 +177,31 @@ func taskComplete(task string) {
 	id, _ := primitive.ObjectIDFromHex(task)
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"status": true}}
+	result, err := collection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("modified count: ", result.ModifiedCount)
+}
+
+// task complete method, update task's status to true
+func moveTask(task models.ToDoList) {
+	var update bson.M
+	fmt.Println(task)
+	id, _ := primitive.ObjectIDFromHex(task.ID.String())
+	filter := bson.M{"_id": id}
+
+	if task.Progress == "" {
+		update = bson.M{"$set": bson.M{"progress": "inProgress"}}
+	} else if task.Progress == "inProgress" {
+		update = bson.M{"$set": bson.M{"progress": "done"}}
+	} else if task.Progress == "done" {
+		update = bson.M{"$set": bson.M{"progress": "completed"}}
+	} else {
+		update = bson.M{"$set": bson.M{"progress": ""}}
+	}
+
 	result, err := collection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Fatal(err)

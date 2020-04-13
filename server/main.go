@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/ryanjb1/todo-app/server/router"
@@ -13,5 +14,5 @@ func main() {
 
 	fmt.Println("Starting server on port 8888...")
 
-	http.ListenAndServe(":8888", r)
+	log.Fatal(http.ListenAndServe(":8888", r))
 }
