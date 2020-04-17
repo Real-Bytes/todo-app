@@ -5,16 +5,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // import the Container Component from the bootstrap-react
 import { Container, Button, Badge, Jumbotron } from "react-bootstrap";
 
+// import custom components
+import Navigation from "./components/Navigation/Navigation"
+
 // import the ToDoList component
 import ToDoList from "./To-Do-List";
 
 function App() {
   return (
     <div>
+      <Navigation/>
       <Container border>
-        <Container p-3 my-3 bg-dark text-white>
-          <h1 class="display-4 p-3">ToDo App RB</h1>
-        </Container>
         <Jumbotron>
           <p>A ToDo App for keeping up with what is required and needed to complete those pescy tasks we have day to day. <span class="badge badge-secondary">New</span></p>
         </Jumbotron>

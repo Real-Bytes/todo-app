@@ -65,7 +65,7 @@ class ToDoList extends Component {
 
             if (item.progress === "") {
                 return (
-                    <ListGroupItem>
+                    <ListGroupItem key={item._id}>
                         <div style={{ wordWrap: "break-word" }}>{item.task}</div>
                         <div class="btn-group">
                             <Button variant="outline-info" onClick={() => this.moveTask(item._id)}>Move to in progress</Button>
@@ -79,7 +79,7 @@ class ToDoList extends Component {
           inProgressItems: res.data.map(item => {
             if (item.progress === "inProgress") {
                 return (
-                    <ListGroupItem>
+                    <ListGroupItem key={item._id}>
                         <div style={{ wordWrap: "break-word" }}>{item.task}</div>
                         <div class="btn-group">
                             {/* Update below updated task to a done task where it then puts the item into the done column */}
@@ -94,7 +94,7 @@ class ToDoList extends Component {
           doneItems: res.data.map(item => {
             if (item.progress === "done") {
                 return (
-                    <ListGroupItem>
+                    <ListGroupItem key={item._id}>
                         <div style={{ wordWrap: "break-word" }}>{item.task}</div>
                         <div class="btn-group">
                             {/* Update below updated task to a done task where it then puts the item into the completed column */}
@@ -129,10 +129,13 @@ class ToDoList extends Component {
   };
 
   moveTask = id => {
+    let { task } = this.state;
     axios
-      .put(endpoint + "/api/task/move/" + id, {
+      .put(endpoint + "/api/task/move/" + id,
+      {
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Access-Control-Allow-Origin": "*"
         }
       })
       .then(res => {
@@ -166,6 +169,7 @@ class ToDoList extends Component {
         this.getTask();
       });
   };
+  
   render() {
     return (
       <div>
